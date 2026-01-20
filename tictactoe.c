@@ -1,8 +1,8 @@
 #include<stdio.h>
  char game[3][3]={
-        {' ',' ',' '},
-        {' ',' ',' '},
-        {' ',' ',' '}
+        {'1','2','3'},
+        {'4','5','6'},
+        {'7','8','9'}
     };
     char player='X';
 
@@ -48,40 +48,92 @@ return(1);
 else 
 return(0);
 }
-        
-
-int check(int row, int column){
-    int no=0;
+int check(int row,int column){
+    int no=1;
     
     if(game[row][column]=='X'||game[row][column]=='O')
-         no =1;
+         no =0;
     
     return no;
 }
+int turn(int choice){
+    int go;
+    switch(choice){
+        case 1: go=check(0,0);
+        if(go==0)
+        return(0);
+        else 
+        game[0][0]=player;break;
+        
+        case 2:go=check(0,1);
+        if(go==0)
+        return(0);
+        else
+        game[0][1]=player;break;
+        
+        case 3:go=check(0,2);
+        if(go==0)
+        return(0);
+        else
+        game[0][2]=player;break;
+        
+        case 4: go=check(1,0);
+        if(go==0)
+        return(0);
+        else
+        game[1][0]=player;break;
+        
+        case 5: go=check(1,1);
+        if(go==0)
+        return(0);
+        else
+        game[1][1]=player;break;
+        
+        case 6: go=check(1,2);
+        if(go==0)
+        return(0);
+        else
+        game[1][2]=player;break;
+        
+        case 7:go=check(2,0);
+        if(go==0)
+        return(0);
+        else
+        game[2][0]=player;break;
+        
+        case 8: go=check(2,1);
+        if(go==0)
+        return(0);
+        else
+        game[2][1]=player;break;
+        
+        case 9: go=check(2,2);
+        if(go==0)
+        return(0);
+        else
+        game[2][2]=player;break;
+
+    }
+
+    }
+        
+
 int main()
 {
 while(1){
          print_board();
-        int row,column;
-        printf("\n\nPlayer %c turn! Enter your row and column(0-2): ",player);
+        int choice;
+        printf("\n\nPlayer %c turn! Enter your place: ",player);
         //input validation
-        if(scanf("%d %d",&row,&column)!=2){
+        if(scanf("%d",&choice)!=1){
             printf("invalid input!");
             while(getchar()!='\n');
-        }
-        else if(row>2||row<0 || column>2||column<0)
-        {
-            printf("\nENTER VALID ROW AND COLUMN!!!\n");
             continue;
         }
-
         //checking for existing entry
-        if(check(row,column)){
-        printf("\nINVALID!ALREADY OCCUPIED!\n\n");
-        continue;
-                            }
-        else {
-            game[row][column]=player;
+        if(turn(choice)==0){
+            printf("\nINVALID!ALREADY OCCUPIED!\n\n");
+            continue;
         }
         //check for win 
         if(win()){
