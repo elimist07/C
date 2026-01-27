@@ -1,11 +1,11 @@
 #include <stdio.h>
+#include<string.h>
 #include <stdlib.h>
 
 void clear_buffer()
 {
     printf("invalid input!");
-    while (getchar() != '\n')
-        ;
+    while (getchar() != '\n');
 }
 typedef struct
 {
@@ -18,8 +18,8 @@ typedef struct
 
 void add_record(student_record *, int, int);
 void display_record(student_record *, int);
-void search_record(student_record *);
-void delete_record(student_record *);
+void search_record(student_record *,int);
+int delete_record(student_record *,int);
 
 int main()
 {
@@ -50,6 +50,7 @@ int main()
                 printf("Must be greater than 0!\n");
                 continue;
             }
+            total = num + total;
             student_record *temp_student = (student_record *)realloc(student, sizeof(student_record) * total); // struct student_record now is a user defined data type
             if (temp_student == NULL)
             { // check if sufficient memory not allocated
@@ -58,17 +59,17 @@ int main()
             }
             else
                 student = temp_student;
-            total = num + total;
             add_record(student, num, total);
             break;
         case 2:
             display_record(student, total);
             break;
         case 3:
-            search_record(student);
+            search_record(student,total);
             break;
         case 4:
-            delete_record(student);
+            total=delete_record(student,total);
+            student= realloc(student, total*sizeof(student_record));
             break;
         default:
             printf("invalid!\n");
@@ -77,19 +78,26 @@ int main()
     return 0;
 }
 void add_record(student_record *student, int num, int total){
+    if(student==NULL){
+        printf("no data\n");
+    }
 for (int i = total - num; i < total; i++)
 {
     printf("Student %d\n", i + 1);
             printf("enter your name: ");
-            scanf(" %s", student[i].name);
+            scanf(" %.99s", student[i].name);
             printf("enter your age: ");
-            scanf(" %d", &student[i].age);
+            if(scanf(" %d", &student[i].age)!=1)
+            clear_buffer();
             printf("enter your class: ");
-            scanf(" %d", &student[i].class);
+            if(scanf(" %d", &student[i].class)!=1)
+            clear_buffer();
             printf("enter your roll number: ");
-            scanf(" %d", &student[i].roll_no);
+            if(scanf(" %d", &student[i].roll_no)!=1)
+            clear_buffer();
             printf(" enter your gpa:");
-            scanf(" %f", &student[i].gpa);
+            if(scanf(" %f", &student[i].gpa)!=1)
+            clear_buffer();
         }
     }
 
@@ -100,6 +108,7 @@ void display_record(student_record *student, int total) // displys the record
         if (total== 0)
         {
             printf("no data\n");
+            return;
         }
         else
         {
@@ -107,15 +116,56 @@ void display_record(student_record *student, int total) // displys the record
     printf("s.n|\tName\t|\tage\t|\tclass\t|\trollno\t|\tgpa\t|\n");
     for (int i = 0; i < total; i++)
     {
-        printf("%d\t%s\t\t%d\t\t%d\t\t%d\t\t%f\t\n", i + 1, student[i].name, student[i].age, student[i].class, student[i].roll_no, student[i].gpa);
+        printf("%d\t%s\t\t%d\t\t%d\t\t%d\t\t%.2f\t\n", i + 1, student[i].name, student[i].age, student[i].class, student[i].roll_no, student[i].gpa);
     }
 }
 }
 
-void search_record(student_record *student)
+void search_record(student_record *student,int total)
 {
-}
+    int rollno=0,i=0;
+    if(student==NULL || total==0){
+        printf("no data\n");
+        return;
+    }
+    printf("Enter roll no of student: ");
+    if(scanf("%d",&rollno)!=1){
+        clear_buffer();
+    }
+   do{
+    if(student[i].roll_no==rollno){
+        printf("s.n|\tName\t|\tage\t|\tclass\t|\trollno\t|\tgpa\t|\n");
+        printf("%d\t%s\t\t%d\t\t%d\t\t%d\t\t%.2f\t\n", i + 1, student[i].name, student[i].age, student[i].class, student[i].roll_no, student[i].gpa);
+       return;
+    }
+    i++;
+    if(i==total)
+    printf("no data\n");
+   }while(i<total);
+   }
 
-void delete_record(student_record *student)
+
+int delete_record(student_record *student,int total)
 {
+    int rollno,i=0;
+    printf("Enter roll no of student you want to delete: ");
+    if(scanf("%d",&rollno)!=1){
+        clear_buffer();
+    }
+    do{
+        if(student[i].roll_no==rollno){
+
+            for(i;i<total;i++){
+                student[i].age=student[i+1].age;
+                student[i].class=student[i+1].class;
+                student[i].roll_no=student[i+1].roll_no;
+                strcpy(student[i].name,student[i+1].name);
+                student[i].gpa=student[i+1].gpa;
+            }
+            return(total-=1);
+        }
+        i++;
+        if(i==total)
+        printf("student doesn't exist!\n");
+    }while(i<total);
 }
