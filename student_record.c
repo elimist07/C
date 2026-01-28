@@ -69,7 +69,11 @@ int main()
             break;
         case 4:
             total=delete_record(student,total);
-            student= realloc(student, total*sizeof(student_record));
+            student_record* temp_student= realloc(student, total*sizeof(student_record));
+            if(temp_student==NULL)
+            printf("error\n");
+            else 
+            student=temp_student;
             break;
         default:
             printf("invalid!\n");
@@ -139,33 +143,40 @@ void search_record(student_record *student,int total)
        return;
     }
     i++;
-    if(i==total)
-    printf("no data\n");
-   }while(i<total);
-   }
+}while(i<total);
+if(i==total)
+printf("no data\n");
+}
 
 
 int delete_record(student_record *student,int total)
 {
-    int rollno,i=0;
+    if(total==0){
+    printf("no data\n");
+    return 0;
+}
+    int rollno,i=1;
     printf("Enter roll no of student you want to delete: ");
     if(scanf("%d",&rollno)!=1){
         clear_buffer();
     }
     do{
-        if(student[i].roll_no==rollno){
+        if(student[i-1].roll_no==rollno){
 
             for(i;i<total;i++){
-                student[i].age=student[i+1].age;
-                student[i].class=student[i+1].class;
-                student[i].roll_no=student[i+1].roll_no;
-                strcpy(student[i].name,student[i+1].name);
-                student[i].gpa=student[i+1].gpa;
+                student[i-1].age=student[i].age;
+                student[i-1].class=student[i].class;
+                student[i-1].roll_no=student[i].roll_no;
+                strcpy(student[i-1].name,student[i].name);
+                student[i-1].gpa=student[i].gpa;
             }
             return(total-=1);
         }
         i++;
-        if(i==total)
-        printf("student doesn't exist!\n");
-    }while(i<total);
+    }
+while(i<total);
+if(i==total){
+printf("student doesn't exist!\n");
+return total;
+}
 }
