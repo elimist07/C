@@ -57,7 +57,11 @@ int two_matrices(int (*p)(int **,int **, int, int, int, int), int choice)
         }
     }
     p(arr1, arr2, row1, column1, row2, column2);
+    for(int i=0;i<row1;i++)
+    free(arr1[i]);
     free(arr1);
+    for(int i=0;i<row2;i++)
+    free(arr2[i]);
     free(arr2);
     return 0;
 }
@@ -65,7 +69,7 @@ int two_matrices(int (*p)(int **,int **, int, int, int, int), int choice)
 int one_matrix(int (*p)(int **, int, int))
 {
     int row, column;
-    printf("No. of row and column of matrix 1?:  ");
+    printf("No. of row and column of matrix ?:  ");
     if (scanf(" %d %d", &row, &column) != 2)
     {
         printf("invalid input\n");
@@ -75,7 +79,21 @@ int one_matrix(int (*p)(int **, int, int))
     int **arr = (int **)malloc(row * sizeof(int *));
     for (int i = 0; i < row; i++)
         arr[i] = (int *)malloc(column * sizeof(int));
+     
+    printf("MATRIX\n");
+    for (int i = 0; i < row; i++)
+    {
+        for (int j = 0; j < column; j++)
+        {
+            printf("Enter element of Row%d Column %d: ", i, j);
+            scanf("%d", &arr[i][j]);
+        }
+    }    
+
     p(arr, row, column);
+    for(int i=0;i<row;i++)
+    free(arr[i]);
+    free(arr);
 }
 int main()
 {
@@ -85,7 +103,10 @@ int main()
     {
         printf("\n\nMatrix Operation Engine\n");
         printf("1.Addition\n2.Multiplication\n3.Transpose\nEnter your option(0 to quit): ");
-        scanf(" %d", &choice);
+        if(scanf(" %d", &choice)!=1){
+            printf("No such option!\n");
+            while(getchar()!='\n');
+        }
         if (choice == 0)
             break;
         switch (choice)
@@ -100,7 +121,7 @@ int main()
             one_matrix(transpose);
             break;
         default:
-            printf("invalid option!\n\n");
+            printf("Choose within given options!\n\n");
         }
         printf("Continue again?(y/n): ");
         scanf(" %c", &cont);
@@ -130,7 +151,26 @@ int multiplication(int **arr1, int **arr2, int row1, int column1, int row2, int 
 {
     return 0;
 }
-int transpose(int **, int, int)
+int transpose(int **arr, int row, int column)
 {
+int** swap_arr=(int**)malloc(column*sizeof(int *));//row becomes column
+for(int i=0;i<column;i++)
+swap_arr[i]=(int*)malloc(row*sizeof(int));//column beocmes row
+
+for(int i=0;i<column;i++){
+    for(int j=0;j<row;j++){
+        swap_arr[i][j]=arr[j][i];
+    }
+}
+for(int i=0;i<column;i++){
+    for(int j=0;j<row;j++){
+        printf("%d \t",swap_arr[i][j]);
+    }
+    printf("\n");
+}
+
+for(int i=0;i<column;i++)
+free(swap_arr[i]);
+free(swap_arr);
     return 0;
 }
