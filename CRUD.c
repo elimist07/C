@@ -10,9 +10,9 @@ typedef struct
     float gpa;
 } uni;
 
-uni *read_data(char *, int *);
 int append_data(char *, uni *, int);
-
+uni *read_data(char *, int *);
+int delete_data(char *, uni *, int);
 
 int main()
 {
@@ -49,6 +49,7 @@ int main()
             if (file_data == NULL)
             {
                 printf("error reading data\n");
+                return 0;
             }
 
             printf("data read OK\n");
@@ -63,7 +64,16 @@ int main()
         case 3:
             break;
         case 4:
-            break;
+            uni *delete;
+            int id;
+            printf("Enter the id you want to delete: ");
+            scanf(" %d", &id);
+            if(delete_data("student.bin", delete, id)==1)
+            printf("data deletion success!\n");
+            else
+            printf("error deleting data\n");
+            return 0;
+
         default:
             printf("Choose within given option\n");
             return 0;
@@ -80,10 +90,8 @@ int append_data(char *file_name, uni *data, int total)
         printf("error opening file\n");
         return false;
     }
-    // if (fwrite(&total, sizeof(int), 1, file) != 1)
-    //     return false;
 
-for (int i = 0; i < total; i++)
+    for (int i = 0; i < total; i++)
     {
         printf("Enter your id: ");
         scanf(" %d", &data[i].id);
@@ -112,16 +120,13 @@ uni *read_data(char *file_name, int *total)
         printf("error opening file\n");
         return NULL;
     }
-    // if (fread(total, sizeof(int), 1, file) != 1)
-    //     return NULL;
-    int count=0;
-    fseek(file,0,SEEK_END);
-    printf("%ld\n",ftell(file));
-    *total=(ftell(file))/sizeof(uni);
-    fseek(file,0,SEEK_SET);
+    fseek(file, 0, SEEK_END);
+    *total = (ftell(file)) / sizeof(uni);
+    fseek(file, 0, SEEK_SET);
     uni *data = malloc(sizeof(uni) * (*total));
     if (data == NULL)
     {
+        printf("error\n");
         return 0;
     }
     if (fread(data, sizeof(uni), *total, file) != *total)
@@ -131,4 +136,40 @@ uni *read_data(char *file_name, int *total)
     }
     fclose(file);
     return data;
+}
+
+int delete_data(char *file_name, uni *delete, int id)
+{
+    FILE *file;
+    file = fopen(file_name, "ab");
+    if (file == NULL)
+    {
+        printf("error opening file\n");
+        return false;
+    }
+    fseek(file, 0, SEEK_END);
+    int total = ftell(file) / sizeof(uni);
+    printf("total=%d\n",total);
+    delete = malloc(sizeof(uni) * total);
+    fseek(file,0,SEEK_SET);
+    printf("ftell=%ld\n",ftell(file));
+   
+    for (int i = 0; i < total; i++)
+    {
+         if(fread(delete,sizeof(uni),total,file)==total)
+        printf("\n%d\n",delete[i].id);
+        if (delete[i].id == id)
+        {
+            //printf("done");
+                delete[i].id = -1;
+                free(delete);
+                fclose(file);
+                return 1;
+            
+        }
+    }
+
+    free(delete);
+    fclose(file);
+    return 0;
 }
