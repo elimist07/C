@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 
 typedef struct
 {
@@ -38,7 +37,17 @@ int main()
         case 1:
             uni *student;
             printf("How many data to add?: ");
-            scanf(" %d", &total);
+            if (scanf(" %d", &total) != 1)
+            {
+                printf("Enter valid input!\n");
+                while (getchar() != '\n')
+                    ;
+            }
+            if(total<=0){
+                printf("Enter valid input\n");
+                 while (getchar() != '\n')
+                    ;
+            }
             student = malloc(sizeof(uni) * total);
             append_data("student.bin", student, total);
             free(student);
@@ -84,7 +93,6 @@ int main()
 
         default:
             printf("Choose within given option\n");
-            return 0;
         }
     }
 }
@@ -96,23 +104,45 @@ int append_data(char *file_name, uni *data, int total)
     if (file == NULL)
     {
         printf("error opening file\n");
-        return false;
+        return 0;
     }
 
     for (int i = 0; i < total; i++)
     {
-        printf("Enter your id: ");
-        scanf(" %d", &data[i].id);
+        printf("Enter your id: ");//id input
+        if (scanf(" %d", &data[i].id) != 1)
+        {
+            printf("enter valid input!\n");
+            while (getchar() != '\n')
+                ;
+                return 0;
+        }
+        else if (data[i].id <= 0)//cant be less than  or 0;
+        {
+            printf("Enter valid id no\n");
+            return 0;
+        }
         if (fwrite(&data[i].id, sizeof(int), 1, file) != 1)
-            return false;
-        printf("Enter your name: ");
-        scanf(" %s", data[i].name);
+            return 0;
+        printf("Enter your name: ");//name input
+        scanf(" %127s", data[i].name);
         if (fwrite(data[i].name, sizeof(char), 128, file) != 128)
-            return false;
-        printf("Enter your gpa: ");
-        scanf(" %f", &data[i].gpa);
+            return 0;
+        printf("Enter your gpa: ");//gpa input
+        if(scanf(" %f", &data[i].gpa)!=1)
+        {
+            printf("enter valid input!\n");
+            while (getchar() != '\n')
+                ;
+                return 0;
+        }
+        else if (data[i].gpa <= 0 || data[i].gpa>4)//cant be less than  or 0 and cant be greater than 4;
+        {
+            printf("Enter valid id no\n");
+            return 0;
+        }
         if (fwrite(&data[i].gpa, sizeof(float), 1, file) != 1)
-            return false;
+            return 0;
         printf("\n");
     }
     fclose(file);
@@ -135,6 +165,8 @@ uni *read_data(char *file_name, int *total)
     if (data == NULL)
     {
         printf("error\n");
+        free(data);
+        fclose(file);
         return 0;
     }
     if (fread(data, sizeof(uni), *total, file) != *total)
@@ -146,53 +178,61 @@ uni *read_data(char *file_name, int *total)
     return data;
 }
 
-int update_data(char *file_name,int id){
-FILE *file;
-file=fopen(file_name,"rb");
-if(fopen==NULL){
-    printf("error opening file");
-    return 0;
-}
-FILE *temp_file;
-char *temp_filename="temp_filename";
-temp_file=fopen(temp_filename,"wb");
-if(temp_file==NULL){
-printf("error|\n");
-return 0;
-}
-uni update;
-int not_found=1;
-while(fread(&update,sizeof(uni),1,file)==1){
-    if(update.id==id){
-        printf("Enter new id: ");
-        scanf(" %d",&update.id);
-        fwrite(&update.id,sizeof(int),1,temp_file);
-        printf("Enter new name: ");
-        scanf(" %s",update.name);
-         fwrite(&update.name,sizeof(update.name),1,temp_file);
-        printf("Enter new gpa: ");
-        scanf(" %f",&update.gpa);
-        fwrite(&update.gpa,sizeof(float),1,temp_file);   
-        not_found=0;
+int update_data(char *file_name, int id)
+{
+    FILE *file;
+    file = fopen(file_name, "rb");
+    if (fopen == NULL)
+    {
+        printf("error opening file");
+        return 0;
     }
-    fwrite(&update,sizeof(uni),1,temp_file);
-}
-fclose(file);
-fclose(temp_file);
-if(remove(file_name)!=0){
-    printf("error deleting orginal record\n");
-    remove(temp_filename);
-    return 0;
-}
-if(rename(temp_filename,file_name)!=0){
-    printf("error renaming temporary file\n");
-    return 0;
-}
-if(not_found){
-    printf("Id %d doesnt exit\n",id);
-    return 0;
-}
-return 1;
+    FILE *temp_file;
+    char *temp_filename = "temp_filename";
+    temp_file = fopen(temp_filename, "wb");
+    if (temp_file == NULL)
+    {
+        printf("error|\n");
+        return 0;
+    }
+    uni update;
+    int not_found = 1;
+    while (fread(&update, sizeof(uni), 1, file) == 1)
+    {
+        if (update.id == id)
+        {
+            printf("Enter new id: ");
+            scanf(" %d", &update.id);
+            fwrite(&update.id, sizeof(int), 1, temp_file);
+            printf("Enter new name: ");
+            scanf(" %s", update.name);
+            fwrite(&update.name, sizeof(update.name), 1, temp_file);
+            printf("Enter new gpa: ");
+            scanf(" %f", &update.gpa);
+            fwrite(&update.gpa, sizeof(float), 1, temp_file);
+            not_found = 0;
+        }
+        fwrite(&update, sizeof(uni), 1, temp_file);
+    }
+    fclose(file);
+    fclose(temp_file);
+    if (remove(file_name) != 0)
+    {
+        printf("error deleting orginal record\n");
+        remove(temp_filename);
+        return 0;
+    }
+    if (rename(temp_filename, file_name) != 0)
+    {
+        printf("error renaming temporary file\n");
+        return 0;
+    }
+    if (not_found)
+    {
+        printf("Id %d doesnt exit\n", id);
+        return 0;
+    }
+    return 1;
 }
 
 int delete_data(char *file_name, int id)
@@ -203,7 +243,7 @@ int delete_data(char *file_name, int id)
     if (file == NULL)
     {
         printf("error opening file\n");
-        return false;
+        return 0;
     }
     char *temp_filename = "temp.bin";
     temp_file = fopen(temp_filename, "wb");
@@ -227,7 +267,7 @@ int delete_data(char *file_name, int id)
     {
         printf("error deleting  original record!\n");
         remove(temp_filename);
-        return false;
+        return 0;
     }
     if (rename(temp_filename, file_name) != 0)
     {
