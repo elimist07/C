@@ -1,59 +1,75 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-int ascii_check(char **);
+#include <errno.h>
+extern int errno;
+void help();
+int number_ascii_check(char **);
 int arg_check(int, char **);
+int re_name(char **);
 int main(int argc, char *argv[])
 {
-    if (ascii_check(argv))
+    if (strcmp(argv[1], "help") == 0)
+        help();
+    else if (strcmp(argv[1], "add") == 0 && argc == 4 && number_ascii_check(argv))
+        printf("Sum = %.2f\n", atof(argv[2]) + atof(argv[3]));
+
+    else if (strcmp(argv[1], "sub") == 0 && argc == 4 && number_ascii_check(argv))
+        printf("Difference= %.2f\n", atof(argv[2]) - atof(argv[3]));
+
+    else if (strcmp(argv[1], "mult") == 0 && argc == 4 && number_ascii_check(argv))
+        printf("Product= %.2f\n", atof(argv[2]) * atof(argv[3]));
+
+    else if (strcmp(argv[1], "div") == 0 && argc == 4 && number_ascii_check(argv))
     {
-        switch (arg_check(argc, argv))
+        if (atof(argv[3]) == 0)
         {
-        case 1:
-            printf("Sum = %.2f\n", atof(argv[2]) + atof(argv[3]));
-            break;
-        case 2:
-            printf("Difference= %.2f\n", atof(argv[2]) - atof(argv[3]));
-            break;
-        case 3:
-            printf("Product= %.2f\n", atof(argv[2]) * atof(argv[3]));
-            break;
-        case 4:
-            if (atof(argv[3]) == 0)
-            {
-                printf("Can not divide by zero\n");
-                break;
-            }
-            printf("Quotient= %.2f", atof(argv[2]) / atof(argv[3]));
-            break;
-        default:
-            printf("Insufficient arguments\n");
+            printf("Cannot divide by zero\n");
         }
+        else
+            printf("Quotient= %.2f", atof(argv[2]) / atof(argv[3]));
     }
-    else
-        printf("Invalid arguments\n");
+    else if (strcmp(argv[1], "rename") == 0 && argc == 4)
+    {
+        if (re_name(argv))
+        printf("Renamed Successfully\n");
+            ;
+    }
+    fprintf(stderr, "\nInvalid arguments\nType 'help' for commands");
+
     return 0;
 }
 
-int arg_check(int argc, char *argv[])
+void help()
 {
-
-    if (strcmp(argv[1], "add") == 0 && argc == 4)
-        return 1;
-    if (strcmp(argv[1], "sub") == 0 && argc == 4)
-        return 2;
-    if (strcmp(argv[1], "mult") == 0 && argc == 4)
-        return 3;
-    if (strcmp(argv[1], "div") == 0 && argc == 4)
-        return 4;
-
-    return 0;
+    printf("Availabel Commands\n");
+    printf("add (eg add 2 3)\n");
+    printf("sub (eg 4-1)\n");
+    printf("mult (eg 2 mult 2)\n");
+    printf("div (eg div 4 2)\n");
 }
-int ascii_check(char *argv[])
+int number_ascii_check(char *argv[])
 {
     if (argv[2][0] < 48 || argv[2][0] > 57)
         return 0;
     if (argv[3][0] < 48 || argv[3][0] > 57)
         return 0;
+    return 1;
+}
+int re_name(char *argv[])
+{
+    FILE *file;
+    file = fopen(argv[2], "r");
+    if (file == NULL)
+    {
+        fprintf(stderr, "error:%s", strerror(errno));
+        return 0;
+    }
+    int i = 0;
+    while (argv[3][i] != '\n')
+    {
+        argv[2][i] = argv[3][i];
+        i++;
+    }
     return 1;
 }
