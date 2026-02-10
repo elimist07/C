@@ -125,7 +125,6 @@ int copy_file(char *argv[])
     {
         fprintf(stderr, "%s", strerror(errno));
         fclose(file);
-        fclose(filecopy);
         remove(argv[3]);
         return 0;
     }
@@ -165,7 +164,6 @@ int move_file(char *argv[])
     {
         fprintf(stderr, "%s", strerror(errno));
         fclose(file);
-        fclose(filecopy);
         remove(argv[3]);
         return 0;
     }
@@ -183,7 +181,11 @@ int move_file(char *argv[])
         }
     }
     fclose(file);
-    remove(argv[2]);
+    if(remove(argv[2])!=0){
+        fclose(filecopy);
+        remove(argv[3]);
+        return 0;
+    }
     fclose(filecopy);
     return 1;
 }
@@ -193,7 +195,6 @@ int delete(char *argv[]){
 FILE *file=fopen(argv[2],"rb");
 if(file==NULL){
     fprintf(stderr,"%s\n",strerror(errno));
-    fclose(file);
     return 0;
 }
 if(remove(argv[2])!=0){
