@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/stat.h>
+#include <stdbool.h>
 extern int errno;
 void help();
 int number_ascii_check(char **);
@@ -9,6 +11,8 @@ int re_name(char **);
 int copy_file(char **);
 int move_file(char **);
 int delete(char **);
+void stat_file(char **);
+void show_time(unsigned long);
 int main(int argc, char *argv[])
 {
     if (strcmp(argv[1], "help") == 0)
@@ -48,14 +52,18 @@ int main(int argc, char *argv[])
         if (move_file(argv))
             printf("File moved successfully\n");
         else
-        printf("Error moving file\n");
+            printf("Error moving file\n");
     }
-    else if(strcmp(argv[1],"delete")==0 && argc ==3)
+    else if (strcmp(argv[1], "delete") == 0 && argc == 3)
     {
-        if(delete(argv))
-        printf("File deleted successfully\n");
+        if (delete(argv))
+            printf("File deleted successfully\n");
         else
-        printf("Error deleting file\n");
+            printf("Error deleting file\n");
+    }
+    else if (strcmp(argv[1], "stat") == 0 && argc == 3)
+    {
+        stat_file(argv);
     }
     else
         fprintf(stderr, "Invalid arguments\nType 'help' for commands");
@@ -181,7 +189,8 @@ int move_file(char *argv[])
         }
     }
     fclose(file);
-    if(remove(argv[2])!=0){
+    if (remove(argv[2]) != 0)
+    {
         fclose(filecopy);
         remove(argv[3]);
         return 0;
@@ -190,16 +199,71 @@ int move_file(char *argv[])
     return 1;
 }
 
-
-int delete(char *argv[]){
-FILE *file=fopen(argv[2],"rb");
-if(file==NULL){
-    fprintf(stderr,"%s\n",strerror(errno));
-    return 0;
+int delete(char *argv[])
+{
+    FILE *file = fopen(argv[2], "rb");
+    if (file == NULL)
+    {
+        fprintf(stderr, "%s\n", strerror(errno));
+        return 0;
+    }
+    if (remove(argv[2]) != 0)
+    {
+        fclose(file);
+        return 0;
+    }
+    return 1;
 }
-if(remove(argv[2])!=0){
-fclose(file);
-    return 0;}
-return 1;
+
+void stat_file(char *argv[])
+{
+    const char *filename = argv[2];
+    struct stat st;
+    if (stat(filename, &st) != -1)
+    {
+        printf("Filename:%s\n", argv[2]);
+        printf("Size: %ldbytes\n", st.st_blocks);
+        show_time(st.st_mtime);
+        printf("Permissions:%o", st.st_mode);
+    }
+    else{
+        fprintf(stderr,"%s",strerror(errno));
+    }
+}
+bool isleap(int year)
+{
+    return (year % 400 == 0) || (year % 4 == 0 && year % 100 != 0);
 }
 
+void show_time(unsigned long S)
+{
+    const unsigned long sec_per_day = 86400, days_per_year = 365, epoch_year = 1970;
+
+    unsigned long days = S / sec_per_day;
+    unsigned long sec_in_day = S % sec_per_day;
+
+    unsigned long hours = sec_in_day / 3600;
+    unsigned long minutes = (sec_in_day % 3600) / 60;
+    unsigned long sec = sec_in_day % 60;
+
+    int year = epoch_year;
+    while (days >= (days_per_year + isleap(year)))
+    {
+        days = days - (days_per_year + isleap(year));
+        year++;
+    }
+
+    int month_Days[12] = {31, 28 + isleap(year), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+    int m = 0;
+    while (days >= month_Days[m])
+    {
+        days = days - month_Days[m];
+        m++;
+    }
+
+    int month = m + 1;
+    int day = days + 1;
+
+    printf("Last Modified: %02d/%02d/%04d %02lu:%02lu:%02lu\n", day, month, year, hours, minutes, sec);
+}
