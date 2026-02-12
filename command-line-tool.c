@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <stdbool.h>
+#include <ctype.h>
 extern int errno;
 void help();
 int number_ascii_check(char **);
@@ -13,6 +14,8 @@ int move_file(char **);
 int delete(char **);
 void stat_file(char **);
 void show_time(unsigned long);
+void count(char **);
+void reverse(char **);
 int main(int argc, char *argv[])
 {
     if (strcmp(argv[1], "help") == 0)
@@ -65,6 +68,14 @@ int main(int argc, char *argv[])
     {
         stat_file(argv);
     }
+    else if (strcmp(argv[1], "count") == 0 && argc == 3)
+    {
+        count(argv);
+    }
+    else if (strcmp(argv[1], "reverse") == 0 && argc == 3)
+    {
+        reverse(argv);
+    }
     else
         fprintf(stderr, "Invalid arguments\nType 'help' for commands");
 
@@ -80,7 +91,10 @@ void help()
     printf("div (eg div 4 2)\n");
     printf("rename (eg rename oldname newname)\n");
     printf("copy (eg copy source destination)\n");
-    printf("delete (eg delete filename)");
+    printf("delete (eg delete filename)\n");
+    printf("stat (eg stat filename)\n");
+    printf("count (eg count filename)\n");
+    printf("reverse (eg reverse)\n");
 }
 
 int number_ascii_check(char *argv[])
@@ -212,6 +226,7 @@ int delete(char *argv[])
         fclose(file);
         return 0;
     }
+    fclose(file);
     return 1;
 }
 
@@ -226,8 +241,9 @@ void stat_file(char *argv[])
         show_time(st.st_mtime);
         printf("Permissions:%o", st.st_mode);
     }
-    else{
-        fprintf(stderr,"%s",strerror(errno));
+    else
+    {
+        fprintf(stderr, "%s", strerror(errno));
     }
 }
 bool isleap(int year)
@@ -236,6 +252,7 @@ bool isleap(int year)
 }
 
 void show_time(unsigned long S)
+
 {
     const unsigned long sec_per_day = 86400, days_per_year = 365, epoch_year = 1970;
 
@@ -266,4 +283,52 @@ void show_time(unsigned long S)
     int day = days + 1;
 
     printf("Last Modified: %02d/%02d/%04d %02lu:%02lu:%02lu\n", day, month, year, hours, minutes, sec);
+}
+
+void count(char *argv[])
+
+{
+    FILE *file = fopen(argv[2], "r");
+    if (file == NULL)
+    {
+        fprintf(stderr, "%s", strerror(errno));
+        return;
+    }
+    int byte;
+    int whitespace = true;
+    size_t lines = 0, words = 0, characters = 0;
+    while ((byte = fgetc(file)) != EOF)
+    {
+        if (byte == 10)
+            lines++;
+        if (whitespace && !isspace(byte))
+        {
+            words++;
+            whitespace = false;
+        }
+        else if (!whitespace && isspace(byte))
+        {
+            whitespace = true;
+        }
+        characters++;
+    }
+    fclose(file);
+    printf("%ld %ld %ld %s", lines, words, characters, argv[2]);
+}
+
+void reverse(char *argv[])
+{
+    FILE *file = fopen(argv[2], "r");
+    if (file == NULL)
+    {
+        fprintf(stderr, "%s", strerror(errno));
+        return;
+    }
+   fseek(file,0,SEEK_END);
+   size_t size=ftell(file);
+   for(long int i=size-1;i>=0;i--){
+    fseek(file,i,SEEK_SET);
+    fprintf(stdout,"%c",fgetc(file));
+   }
+    fclose(file);
 }
