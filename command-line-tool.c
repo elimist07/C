@@ -16,6 +16,9 @@ void stat_file(char **);
 void show_time(unsigned long);
 void count(char **);
 void reverse(char **);
+void top_file(char **);
+void bottom_file(char **);
+
 int main(int argc, char *argv[])
 {
     if (strcmp(argv[1], "help") == 0)
@@ -76,6 +79,13 @@ int main(int argc, char *argv[])
     {
         reverse(argv);
     }
+    else if (strcmp(argv[1], "head") == 0 && argc == 4)
+    {
+        top_file(argv);
+    }
+    else if (strcmp(argv[1], "tail") == 0 && argc == 4)
+        bottom_file(argv);
+
     else
         fprintf(stderr, "Invalid arguments\nType 'help' for commands");
 
@@ -95,6 +105,8 @@ void help()
     printf("stat (eg stat filename)\n");
     printf("count (eg count filename)\n");
     printf("reverse (eg reverse)\n");
+    printf("head (head filename N)\n");
+    printf("tail (tail filename N)\n");
 }
 
 int number_ascii_check(char *argv[])
@@ -324,11 +336,48 @@ void reverse(char *argv[])
         fprintf(stderr, "%s", strerror(errno));
         return;
     }
-   fseek(file,0,SEEK_END);
-   size_t size=ftell(file);
-   for(long int i=size-1;i>=0;i--){
-    fseek(file,i,SEEK_SET);
-    fprintf(stdout,"%c",fgetc(file));
-   }
+    fseek(file, 0, SEEK_END);
+    size_t size = ftell(file);
+    for (long int i = size - 1; i >= 0; i--)
+    {
+        fseek(file, i, SEEK_SET);
+        fprintf(stdout, "%c", fgetc(file));
+    }
     fclose(file);
+}
+
+void top_file(char *argv[])
+{
+    FILE *file = fopen(argv[2], "r");
+    if (file == NULL)
+    {
+        fprintf(stderr, "%s", strerror(errno));
+        return;
+    }
+    int byte, lines = 0;
+    while ((byte = fgetc(file)) != EOF)
+    {
+        if (byte == 10)
+            lines++;
+        if (lines == atoi(argv[3]))
+            break;
+        fprintf(stdout, "%c", byte);
+    }
+    fclose(file);
+}
+
+void bottom_file(char *argv[])
+{
+    FILE *file = fopen(argv[2], "r");
+    if (file == NULL)
+    {
+        fprintf(stderr, "%s", strerror(errno));
+        return;
+    }
+    int total_lines = 0,byte;
+   while((byte=fgetc(file))!=EOF){
+    if(byte==10)total_lines++;
+   }
+   rewind(file);
+    
 }

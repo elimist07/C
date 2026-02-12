@@ -1,1 +1,29 @@
-The old programmer leaned back in his chair, the fluorescent lights of the office humming a tired, flickering melody that had scored forty years of his life. He remembered when this building was new, when the computers took up entire rooms and the concept of a "personal computer" was an oxymoron whispered about only in science fiction. Back then, programming was a craft of intimate precision; you knew every byte of memory, every cycle of the processor, because you had so precious few of either to waste. He had punched cards in college, fed stacks of them into readers the size of refrigerators, and waited hours to see if his program would run or if he had misplaced a single hole in a single column. Then came the terminals, green text on black screens, and the birth of C—a language that felt like holding a scalpel instead of a sledgehammer. He had fallen in love with its elegance, its honesty; it didn't hide the machine from you, it simply gave you cleaner tools to talk to it. And now, as the world rushed headlong into frameworks built upon frameworks, into gigabyte dependencies for a "hello world" that ran in a browser, he found himself returning to that old simplicity. The text file on his screen was just bytes, just ones and zeros, and his little C program was just counting transitions, just watching for the moment when whitespace became character and back again. It was small, it was fast, and it was correct. It didn't need a package manager or a build system with more lines than the code itself. It was just him, the machine, and a quiet understanding that had never really gone out of style.
+Andhra Pradesh
+Arunachal Pradesh
+Assam
+Bihar
+Chhattisgarh
+Goa
+Gujarat
+Haryana
+Himachal Pradesh
+Jammu and Kashmir
+Jharkhand
+Karnataka
+Kerala
+Madhya Pradesh
+Maharashtra
+Manipur
+Meghalaya
+Mizoram
+Nagaland
+Odisha
+Punjab
+Rajasthan
+Sikkim
+Tamil Nadu
+Telangana
+Tripura
+Uttar Pradesh
+Uttarakhand
+West Bengal
