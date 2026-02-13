@@ -18,6 +18,7 @@ void count(char **);
 void reverse(char **);
 void top_file(char **);
 void bottom_file(char **);
+void grep(char **);
 
 int main(int argc, char *argv[])
 {
@@ -85,7 +86,8 @@ int main(int argc, char *argv[])
     }
     else if (strcmp(argv[1], "tail") == 0 && argc == 4)
         bottom_file(argv);
-
+    else if (strcmp(argv[1], "grep") == 0 && argc == 4)
+        grep(argv);
     else
         fprintf(stderr, "Invalid arguments\nType 'help' for commands");
 
@@ -374,10 +376,54 @@ void bottom_file(char *argv[])
         fprintf(stderr, "%s", strerror(errno));
         return;
     }
-    int total_lines = 0,byte;
-   while((byte=fgetc(file))!=EOF){
-    if(byte==10)total_lines++;
-   }
-   rewind(file);
-    
+    int total_lines = 0, byte;
+    while ((byte = fgetc(file)) != EOF)
+    {
+        if (byte == 10)
+            total_lines++;
+    }
+    int check_line = 0;
+    fseek(file, 0, SEEK_SET);
+    while ((byte = fgetc(file)) != EOF)
+    {
+        if (byte == 10)
+            check_line++;
+        if (check_line >= (total_lines - atoi(argv[3])) && check_line <= total_lines)
+            fprintf(stdout, "%c", byte);
+    }
+}
+
+void grep(char *argv[])
+{
+    FILE *file = fopen(argv[3], "r");
+    if (file == NULL)
+    {
+        fprintf(stderr, "%s", strerror(errno));
+        return;
+    }
+    int length = strlen(argv[2]), i = 0, byte;
+    int match = false, whitespace = true;
+    char buffer[100], word[length];
+    while ((byte = fgetc(file)) != EOF)
+    {
+        buffer[i] = byte;
+        if (buffer[i] == word[i])
+            match == true;
+        if (whitespace && !isspace(byte))
+        {
+            if (match)
+            {
+                for (int j = 0; j <= 100; j++)
+                    fprintf(stdout, "%c", buffer[j]);
+                i = 0;
+                match = false;
+            }
+            whitespace = false;
+        }
+        else if (!whitespace && isspace(byte))
+        {
+            whitespace = true;
+        }
+        i++;
+    }
 }
