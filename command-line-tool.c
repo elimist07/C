@@ -401,29 +401,11 @@ void grep(char *argv[])
         fprintf(stderr, "%s", strerror(errno));
         return;
     }
-    int length = strlen(argv[2]), i = 0, byte;
-    int match = false, whitespace = true;
-    char buffer[100], word[length];
-    while ((byte = fgetc(file)) != EOF)
-    {
-        buffer[i] = byte;
-        if (buffer[i] == word[i])
-            match == true;
-        if (whitespace && !isspace(byte))
-        {
-            if (match)
-            {
-                for (int j = 0; j <= 100; j++)
-                    fprintf(stdout, "%c", buffer[j]);
-                i = 0;
-                match = false;
-            }
-            whitespace = false;
+    char buffer[1200], *pos;
+    while (fgets(buffer, sizeof(buffer), file)!=NULL){
+            pos = strstr(buffer, argv[2]);
+            if (pos)
+                fprintf(stdout, "%s", buffer);
         }
-        else if (!whitespace && isspace(byte))
-        {
-            whitespace = true;
-        }
-        i++;
+        fclose(file);
     }
-}
