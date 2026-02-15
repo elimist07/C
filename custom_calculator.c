@@ -126,4 +126,4 @@ for(int i=a;i>=1;i--){
     fact=fact*i;
 }
 return fact;    
-}
+
