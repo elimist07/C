@@ -102,26 +102,22 @@ int frequent_characters(char *argv[])
         return -1;
     }
     int characters[256] = {0}, byte;
-    for (int i = 0; i < 255; i++)
-        characters[i] = 0;
+
     while ((byte = fgetc(file)) != EOF)
     {
-        // printf("%c\n",byte);
+        if(!isthisspace(byte))
         characters[byte] = characters[byte] + 1;
     }
     fclose(file);
-
-    for (int i = 0; i < 255 - 1; i++)
+    int max_frequency = 0, max_character = 0;
+    for (int i = 0; i < 256; i++)
     {
-        for (int j = 0; j < 255 - i; j++)
+        if (characters[i] > max_frequency)
         {
-            if (characters[j] > characters[j + 1])
-            {
-                int temp = characters[j];
-                characters[j] = characters[j + 1];
-                characters[j + 1] = temp;
-            }
+            max_character = i;
+            max_frequency = characters[i];
         }
     }
-    return (characters[256]);
+    fprintf(stdout,"Repeated %d time\n",max_frequency);
+    return (max_character);
 }
