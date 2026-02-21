@@ -25,7 +25,7 @@ void bubble_sort(void *array, int n, int size, int (*comp)(void *, void *))
         for (int j = 0; j < n - i - 1; j++)
         {
             no_of_comp++;
-            void *a = (char *)array + j * size, *b = (char *)array + (j + 1) * size; // void* point to any data type,not limitd to single datatype
+            void *a = (char *)array + j * size, *b = (char *)array + (j + 1) * size; // void* store/point any data type,not limitd to single datatype
             if (comp(a, b) > 0)
             {
                 swap(a, b, size);
@@ -62,13 +62,13 @@ void selection_sort(void *array, int n, int size, int (*comp)(void *, void *))
 }
 void binary_search(void *array, int n, int size, void *target, int (*comp)(void *, void *))
 {
-    int low = 0, high = n;
+    int low = 0, high = n-1;
     int mid_index = low + (high - low) / 2;
     void *a = (char *)array, *mid = (char *)array + mid_index * size, *b = (char *)array + n * size;
     int re;
     if (comp(a, b) == -1)
     {
-        if (comp(a, target) == 1 || comp(b, target) == -1)
+        if (comp(a, target) >0 || comp(b, target)<0)
         {
             printf("Target not in array");
             return;
@@ -93,7 +93,7 @@ void binary_search(void *array, int n, int size, void *target, int (*comp)(void 
     }
     else
     {
-        if (comp(a, target) == -1 || comp(b, target) == 1)
+        if (comp(a, target)<0  || comp(b, target) >0)
         {
             printf("Target not in array");
             return;
@@ -119,7 +119,7 @@ void binary_search(void *array, int n, int size, void *target, int (*comp)(void 
     if (re == 0)
         printf("Target found at index %d\n", mid_index);
     else
-        printf("Target not in array2");
+        printf("Target not in array");
 }
 int comp_int(void *a, void *b)
 {
