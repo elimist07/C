@@ -19,5 +19,6 @@ This is a collection of C programs, that I built while learning C programming co
 Each project folder contains a single `.c` file (exculding text-analyzer foler). Compile with:
 
     gcc <filename>.c -o <output_name>
-For text-analyzer foler we can compile three separate files using:
-    gcc mini_text_analyzer.c textanalyzer.c -o textanalyzer
+For text-analyzer folder we can compile three separate files using:
+
+    gcc mini_text_analyzer.c textanalyzer.c -o <output_name>
