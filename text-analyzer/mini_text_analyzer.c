@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        fprintf(stdout, "Invalid Syntax");
+        fprintf(stdout, "Invalid Syntax! Give file name");
         return -1;
     }
     return 0;
